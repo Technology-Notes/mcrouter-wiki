@@ -207,30 +207,33 @@ Returns the default reply for each request right away. Default replies are:
  
 No properties.
 
-### PrefixSelectorRoute
-Sends to different targets based on specified key prefixes.
+### OperationSelectorRoute (previously: PrefixPolicyRoute)
+Sends to different targets based on specified operations.
 
 Properties:
 
-* `wildcard`  
-    Default route handle if the key prefix does not match any other specified policies.
-
-* `policies`  
+ * `default_policy`  
+   Default route handle.
+ * `operation_policies`  
    Object, with operation name as key and route handle for specified operation as
    value. Example:
 
  ```JavaScript
-"route": {
-        "type": "PrefixSelectorRoute",
-        "policies": {
-          "shr": "PoolRoute|shared_pool"
-        },
-        "wildcard": "PoolRoute|local_pool_in_second_cluster"
+  {
+    "type": "OperationSelectorRoute",
+    "default_policy": "PoolRoute|A",
+    "operation_policies": {
+      "delete": {
+        "type": "AllSyncRoute",
+        "children": [ "PoolRoute|A", "PoolRoute|B" ]
       }
-```
-See [[Prefix routing setup]] for a more detailed example.
+    }
+  }
+ ```
 
-**Note:** PrefixSelectorRoute can be only used as a topmost route handle in config tree. It's the only route handle with such restriction.
+ Sends gets and sets to pool A, sends deletes to pool A and pool B.
+ Valid operations are 'add', 'get', 'set', 'delete', 'incr', 'decr'.
+ Route handles for `operation_policies` are parsed in alphabetical order (delete, get, set).
 
 ### PoolRoute
 Route handle that routes to a pool. With different settings, it provides the same
@@ -304,37 +307,31 @@ Properties:
      Step by which the percentage of requests sent to the server should be incremented when its hit rate increases.  
      * `min_requests` (optional, default 100)  
      Minimum number of requests necessary to start calculating the hit rate. Before this number is reached, the server is considered warm. 
-   
- 
 
-### OperationSelectorRoute (previously: PrefixPolicyRoute)
-Sends to different targets based on specified operations.
+### PrefixSelectorRoute
+Sends to different targets based on specified key prefixes.
 
 Properties:
 
- * `default_policy`  
-   Default route handle.
- * `operation_policies`  
+* `wildcard`  
+    Default route handle if the key prefix does not match any other specified policies.
+
+* `policies`  
    Object, with operation name as key and route handle for specified operation as
    value. Example:
 
  ```JavaScript
-  {
-    "type": "OperationSelectorRoute",
-    "default_policy": "PoolRoute|A",
-    "operation_policies": {
-      "delete": {
-        "type": "AllSyncRoute",
-        "children": [ "PoolRoute|A", "PoolRoute|B" ]
+"route": {
+        "type": "PrefixSelectorRoute",
+        "policies": {
+          "shr": "PoolRoute|shared_pool"
+        },
+        "wildcard": "PoolRoute|local_pool_in_second_cluster"
       }
-    }
-  }
- ```
+```
+See [[Prefix routing setup]] for a more detailed example.
 
- Sends gets and sets to pool A, sends deletes to pool A and pool B.
- Valid operations are 'add', 'get', 'set', 'delete', 'incr', 'decr'.
- Route handles for `operation_policies` are parsed in alphabetical order (delete, get, set).
-
+**Note:** PrefixSelectorRoute can be only used as a topmost route handle in config tree. It's the only route handle with such restriction.
 
 ### RandomRoute
 Routes to one random destination from list of children.
