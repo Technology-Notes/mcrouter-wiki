@@ -5,7 +5,7 @@ Properties:
  * `children`: list of child route handles.
 
 ### AllFastestRoute
-Immediately sends the same request to all child route handles. Returns the first non-error reply to come back. Other requests complete in the background and their replies are silently ignored.
+Immediately sends the same request to all child route handles. Returns the first non-error reply to come back, or if all replies are errors, then the last error reply. Other requests complete in the background and their replies are silently ignored.
 
 Properties:
  * `children`: list of child route handles.
