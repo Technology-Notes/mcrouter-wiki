@@ -116,6 +116,15 @@ Properties:
  * `children`: list of child route handles.
  * `salt` (string, optional): if present, mcrouter will use `hash(salt, client host ID)` instead of client host ID.
 
+### LatencyInjectionRoute
+Injects latency before and/or after sending the request down to it's child. 
+This route handle can be used for disaster simulation scenrios
+
+Properties:
+ * `child`: Child route handle.
+ * `before_latency_ms`(int, optional): Latency to inject before sending the request to child
+ * `after_latency_ms`(int, optional): Latency to inject after sending the request to child
+
 ### LatestRoute
 Attempts to "behave well" in how many new targets it connects to.
 Creates a FailoverRoute with at-most `failover_count` child handles chosen
